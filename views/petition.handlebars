@@ -1,0 +1,22 @@
+<div class="container">
+<h1>Petition</h1>
+<div class="description">
+    <p>against jumping out of the seat as soon as the plane lands !</p>
+ <img class="plane" src="/on_plane.jpg" alt="on-plane">
+</div>
+<div class="form-container">
+<form id="signup" method="POST" action="/submit-form">
+  <label for="firstname">First name:</label>
+  <input type="text" id="firstname" name="firstname" required>
+  <br><br>
+  <label for="lastname">Last name:</label>
+  <input type="text" id="lastname" name="lastname" required>
+  <br><br>
+  <label for="signature">Signature:</label>
+  <canvas id="canvas" width="200" height="40"></canvas>
+  <input type="hidden" id="signature" name="signature" required>
+  <br><br>
+  <input type="submit" value="Submit">
+</form>
+</div>
+</div>
