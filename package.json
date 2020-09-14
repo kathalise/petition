@@ -16,10 +16,12 @@
         "bcryptjs": "^2.4.3",
         "cookie-parser": "^1.4.3",
         "cookie-session": "^2.0.0-alpha.1",
+        "cookies-parser": "^1.2.0",
         "csurf": "^1.9.0",
         "express": "^4.14.0",
         "express-handlebars": "^3.0.0",
         "jest": "^25.1.0",
+        "pg": "^8.3.3",
         "redis": "^2.6.2",
         "spiced-pg": "^1.0.0",
         "supertest": "^4.0.2"

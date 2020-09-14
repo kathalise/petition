@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS signatures;
 
   CREATE TABLE signatures (
       id SERIAL PRIMARY KEY,
-      firstname VARCHAR NOT NULL CHECK (first != ''),
-      firstname VARCHAR NOT NULL CHECK (last != ''),
-      signature TEXT NOT NULL CHECK (signature != '')
+      firstname VARCHAR(255) NOT NULL CHECK (firstname != ''),
+      lastname VARCHAR(255) NOT NULL CHECK (lastname != ''),
+      signature TEXT CHECK (signature != '')
   );
