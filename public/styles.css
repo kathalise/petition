@@ -37,7 +37,7 @@ p {
 
 .description p {
     transform: translate(50% 50%);
-    width: 40%;
+    width: 500px;
     color: rgba(0, 0, 0, 0.699);
 }
 .plane {
@@ -132,7 +132,7 @@ input {
 li {
     margin: 10px 0;
     border-bottom: solid rgba(0, 0, 0, 0.728) 1px;
-    background-color: #c8204433;
+    /* background-color: #c8204433; */
 }
 
 .thanks-container {

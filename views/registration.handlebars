@@ -1,0 +1,27 @@
+<h1>Registration</h1>
+<div class="description">
+    
+ <img class="plane" src="/on_plane_copy.png" alt="cnn.com">
+ <figcaption>© cnn.com</figcaption>
+ <p>Have you ever wondered what the people who stand up as soon as the plane lands do with all that extra time they saved? <br>This petition puts an end to that madness. Please support and sign!</p>
+</div>
+{{#if inputIncomplete}}
+  {{>error }}
+  {{/if}}
+<div class="form-container">
+<form id="signup" method="POST" action="/registration">
+  <label for="firstname"></label>
+  <input type="text" id="firstname" name="firstname" placeholder="Enter your first name">
+  
+  <label for="lastname"></label>
+  <input type="text" id="lastname" name="lastname" placeholder="Enter your last name">
+  
+  <label for="email"></label>
+  <input type="email" id="email" name="email" placeholder="Enter your email">
+  
+  <label for="password"></label>
+  <input type="password" id="password" name="password" minlength="2" placeholder="Chose a password">
+  <br>
+  <input id="button" type="submit" value="Sign up  ✈">
+</form>
+</div>

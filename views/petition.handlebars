@@ -1,5 +1,5 @@
 <div class="container">
-<h1>Petition</h1>
+<h1>Sign Petition</h1>
 <div class="description">
     
  <img class="plane" src="/on_plane_copy.png" alt="cnn.com">
@@ -10,15 +10,9 @@
   {{>error }}
   {{/if}}
 <div class="form-container">
-<form id="signup" method="POST" action="/submit-form">
-  <label for="firstname"></label>
-  <input type="text" id="firstname" name="firstname" placeholder="Your first name">
-  
-  <label for="lastname"></label>
-  <input type="text" id="lastname" name="lastname" placeholder="Your last name">
-  
+<form id="signup" method="POST" action="/petition">
   <canvas id="canvas" width="200" height="40" ></canvas>
-  <input type="hidden" id="signature" name="signature" placeholder="">
+  <input type="hidden" id="signature" name="signature">
   <label class="sign-here" for="signature">Sign here</label>
   
   <input id="button" type="submit" value="Submit  ✈">

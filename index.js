@@ -3,6 +3,7 @@ const handlebars = require("express-handlebars");
 const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const db = require("./db.js");
+const { compare, hash } = require("./bcrypt");
 const app = express();
 
 const hbSet = handlebars.create({
@@ -45,16 +46,59 @@ app.use((req, res, next) => {
 app.use(express.static("./public"));
 
 app.get("/", (req, res) => {
-    res.redirect("/petition");
+    res.redirect("/registration");
 });
 
-app.get("/petition", (req, res) => {
-    // console.log("made it to test!");
-    // if you have a signatureID -> you already signed -> redirect to "thanks"
-    if (req.session.signatureId) {
-        console.log("(A) req.session.signatureId: ", req.session.signatureId);
-        res.redirect("/thanks");
-        // else -> sign petition
+app.get("/registration", (req, res) => {
+    if (!req.session.userId) {
+        res.render("registration", {
+            layout: "main",
+        });
+    } else {
+        res.redirect("/petition");
+    }
+});
+
+app.post("/registration", (req, res) => {
+    console.log("req.body", req.body);
+    const firstname = req.body.firstname;
+    const lastname = req.body.lastname;
+    const email = req.body.email;
+    const plainPassword = req.body.password;
+
+    if (!firstname || !lastname || !email || !plainPassword) {
+        res.render("registration", {
+            layout: "main",
+            inputIncomplete: true,
+        });
+    } else {
+        hash(plainPassword)
+            .then((password) => {
+                db.addUser(firstname, lastname, email, password).then(
+                    (result) => {
+                        req.session.userId = result.rows[0].id;
+                        res.redirect("/petition");
+                    }
+                );
+            })
+            .catch((err) => {
+                console.log(
+                    "There was an error creating a user-account (addUser)!",
+                    err
+                );
+                res.render("registration", {
+                    layout: "main",
+                    inputIncomplete: true,
+                });
+            });
+    }
+});
+
+app.get("/login", (req, res) => {
+    if (!req.session.userId) {
+        res.render("login", {
+            layout: "main",
+        });
     } else {
         res.render("petition", {
             layout: "main",
@@ -62,27 +106,69 @@ app.get("/petition", (req, res) => {
     }
 });
 
-app.post("/submit-form", (req, res) => {
-    console.log("req.body.firstname: ", req.body.firstname);
-    const firstname = req.body.firstname;
-    const lastname = req.body.lastname;
-    const signature = req.body.signature;
+app.post("/login", (req, res) => {
+    const email = req.body.email;
+    const plainPassword = req.body.password;
 
-    if (!firstname || !lastname || !signature) {
+    db.loginUser(email)
+        .then((result) => {
+            const password = result.rows[0].password;
+            const userId = result.rows[0].id;
+            compare(plainPassword, password).then((userExists) => {
+                console.log("userExists", userExists);
+                if (userExists === false) {
+                    res.render("login", {
+                        layout: "main",
+                        inputIncomplete: true,
+                    });
+                } else {
+                    req.session.userId = userId;
+                    res.redirect("/petition");
+                }
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
+
+app.get("/petition", (req, res) => {
+    // console.log("made it to test!");
+    const userId = req.session.userId;
+    if (!userId) {
+        console.log("(A) req.session.userId: ", req.session.userId);
+        res.redirect("/login");
+    } else {
+        db.returnSignature(userId).then((result) => {
+            if (!result.rows[0]) {
+                res.render("petition", {
+                    layout: "main",
+                });
+            } else {
+                res.redirect("/thanks");
+            }
+        });
+    }
+});
+
+app.post("/petition", (req, res) => {
+    const signature = req.body.signature;
+    const userId = req.session.userId;
+    if (!req.body.signature) {
         console.log("All fields require input!");
         res.render("petition", {
             layout: "main",
             inputIncomplete: true,
         });
     } else {
-        db.addData(firstname, lastname, signature)
+        db.addSignature(signature, userId)
             .then((result) => {
-                req.session.signatureId = result.rows[0].id; //////////// !!!
-                req.session.firstname = result.rows[0].firstname; /////// !!!
+                console.log("beyond this point!");
+                req.session.signatureId = result.rows[0].id;
                 res.redirect("/thanks");
             })
             .catch((err) => {
-                console.log("There was an error in addData!", err);
+                console.log("There was an error in addSignature!", err);
                 res.render("petition", {
                     layout: "main",
                     inputIncomplete: true,
@@ -92,29 +178,23 @@ app.post("/submit-form", (req, res) => {
 });
 
 app.get("/thanks", (req, res) => {
-    const signatureId = req.session.signatureId;
-    const currentName = req.session.firstname;
-    // console.log("req.session.signatureId: ", req.session.signatureId);
-    if (!req.session.signatureId) {
+    if (!req.session.userId) {
         res.redirect("/petition");
     } else {
-        // console.log("made it to the thank you page!");
         db.signedByNum()
             .then((result) => {
                 const numOfNames = result.rows[0].count;
 
-                db.addSignature(signatureId).then((signatureImg) => {
+                db.returnSignature(req.session.userId).then((result) => {
                     res.render("thanks", {
                         layout: "main",
-                        signatureImg: signatureImg.rows[0].signature,
+                        signatureImg: result.rows[0].signature,
                         numOfNames,
-                        signatureId,
-                        currentName,
                     });
                 });
             })
             .catch((err) => {
-                console.log("error in addSignature", err);
+                console.log("error in get thanks", err);
             });
     }
 });
