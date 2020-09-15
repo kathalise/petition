@@ -28,8 +28,6 @@ p {
 }
 
 .description {
-    /* border: blue 1px solid; */
-    /* background-color: yellow; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -40,6 +38,7 @@ p {
     width: 500px;
     color: rgba(0, 0, 0, 0.699);
 }
+/* ---------------ILLUSTRATION IMAGE--------------- */
 .plane {
     height: 300px;
     object-fit: scale-down;
@@ -49,6 +48,7 @@ figcaption {
     font-size: 11px;
 }
 
+/* ---------------FORM--------------- */
 .form-container {
     display: flex;
     flex-direction: column;
@@ -58,6 +58,11 @@ figcaption {
         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 #signup {
+    display: inline-grid;
+    grid-row-gap: 10px;
+}
+
+.signup {
     display: inline-grid;
     grid-row-gap: 10px;
 }
@@ -78,14 +83,8 @@ input {
 }
 
 #canvas {
-    /* border: #0085ca 1px solid; */
     border-bottom: solid rgba(0, 0, 0, 0.728) 3px;
-    /* outline: 1px dashed #fff; */
-
-    /* width: 150px; */
-    /* height: 80px; */
     box-sizing: border-box;
-    /* border: #b6b7bc solid 2px; */
     background-color: #c8204433;
     cursor: crosshair;
     margin-top: 10px;
@@ -97,10 +96,8 @@ input {
     font-size: 10px;
     color: rgba(0, 0, 0, 0.315);
 }
-/* #button {
-    background-color: tomato;
-} */
 
+/* ---------------BUTTONS--------------- */
 #button {
     border: 3px rgba(0, 0, 0, 0.728) solid;
     /* height: 80px;
@@ -116,8 +113,14 @@ input {
     transition: background-color color 1s;
 }
 
+#deleteSig:hover {
+    background-color: #c82044;
+    color: white;
+    cursor: pointer;
+    transition: background-color color 1s;
+}
+
 .signedBy-Container {
-    /* border: blueviolet 2px dotted; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -131,10 +134,12 @@ input {
 
 li {
     margin: 10px 0;
-    border-bottom: solid rgba(0, 0, 0, 0.728) 1px;
+    font-size: 1.1em;
+    /* border-bottom: solid rgba(0, 0, 0, 0.728) 1px; */
     /* background-color: #c8204433; */
 }
 
+/* ---------------THANKS--------------- */
 .thanks-container {
     /* border: blueviolet 2px dotted; */
     display: flex;
@@ -166,6 +171,7 @@ a:hover {
     text-decoration: underline;
 }
 
+/* ---------------ERROR MESSAGE--------------- */
 .error {
     font-style: italic;
     color: #c82044;
@@ -173,6 +179,11 @@ a:hover {
     text-align: center;
 }
 
+.logout {
+    background-color: #0087ca22;
+}
+
+/* ---------------FOOTER--------------- */
 footer {
     margin-top: 40px;
     text-align: center;

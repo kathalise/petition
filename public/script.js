@@ -1,10 +1,11 @@
 console.log($, "sanity check");
 (function () {
     const canvas = $("#canvas");
-    // console.log("canvas: ", canvas);
+    console.log("canvas: ", canvas);
     // console.log("canvas[0]: ", canvas[0]);
     //throws error 'cannot read property of undefined (canvas[0])
-    const context = canvas[0].getContext("2d");
+    let context = canvas[0].getContext("2d");
+    console.log("contenxt ???? ", context);
 
     let isSigning = false;
     let x = 0;
@@ -31,9 +32,9 @@ console.log($, "sanity check");
             x = 0;
             y = 0;
             isSigning = false;
-            let actualSignature = $("#signature");
+            let hiddenInput = $("#signature");
             let signatureImage = canvas[0].toDataURL();
-            actualSignature.val(signatureImage);
+            hiddenInput.val(signatureImage);
         }
     });
 
@@ -46,4 +47,13 @@ console.log($, "sanity check");
         context.stroke();
         context.closePath();
     }
+
+    // deleting the signature
+    const deleteSig = $("#deleteSig");
+    deleteSig.on("click", () => {
+        console.log("delete button was clicked!");
+        context.clearRect(0, 0, canvas.width(), canvas.height());
+        $("#signature").val("");
+        createSignature();
+    });
 })();

@@ -10,12 +10,19 @@
   {{>error }}
   {{/if}}
 <div class="form-container">
+<div class="signup">
+
 <form id="signup" method="POST" action="/petition">
   <canvas id="canvas" width="200" height="40" ></canvas>
   <input type="hidden" id="signature" name="signature">
   <label class="sign-here" for="signature">Sign here</label>
   
   <input id="button" type="submit" value="Submit  ✈">
+  
 </form>
+<input id="deleteSig" type="submit" value="Delete Signature">
 </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="/script.js"></script>

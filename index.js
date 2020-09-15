@@ -15,8 +15,8 @@ const hbSet = handlebars.create({
 });
 
 app.engine("handlebars", hbSet.engine);
-// default without global helpers (see line below!)
-// app.engine("handlebars", handlebars());
+// ---- default without global helpers (see line below!) -----
+// ---- app.engine("handlebars", handlebars()); ----
 app.set("view engine", "handlebars");
 app.use(cookieParser());
 app.use(
@@ -49,6 +49,7 @@ app.get("/", (req, res) => {
     res.redirect("/registration");
 });
 
+/* ---------------REGISTRATION--------------- */
 app.get("/registration", (req, res) => {
     if (!req.session.userId) {
         res.render("registration", {
@@ -60,7 +61,7 @@ app.get("/registration", (req, res) => {
 });
 
 app.post("/registration", (req, res) => {
-    console.log("req.body", req.body);
+    // console.log("req.body", req.body);
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
     const email = req.body.email;
@@ -77,7 +78,7 @@ app.post("/registration", (req, res) => {
                 db.addUser(firstname, lastname, email, password).then(
                     (result) => {
                         req.session.userId = result.rows[0].id;
-                        res.redirect("/petition");
+                        res.redirect("/profile");
                     }
                 );
             })
@@ -94,6 +95,7 @@ app.post("/registration", (req, res) => {
     }
 });
 
+/* ---------------LOGIN--------------- */
 app.get("/login", (req, res) => {
     if (!req.session.userId) {
         res.render("login", {
@@ -132,6 +134,7 @@ app.post("/login", (req, res) => {
         });
 });
 
+/* ---------------PETITION--------------- */
 app.get("/petition", (req, res) => {
     // console.log("made it to test!");
     const userId = req.session.userId;
@@ -155,7 +158,7 @@ app.post("/petition", (req, res) => {
     const signature = req.body.signature;
     const userId = req.session.userId;
     if (!req.body.signature) {
-        console.log("All fields require input!");
+        // console.log("All fields require input!");
         res.render("petition", {
             layout: "main",
             inputIncomplete: true,
@@ -177,6 +180,7 @@ app.post("/petition", (req, res) => {
     }
 });
 
+/* ---------------THANKS--------------- */
 app.get("/thanks", (req, res) => {
     if (!req.session.userId) {
         res.redirect("/petition");
@@ -184,7 +188,6 @@ app.get("/thanks", (req, res) => {
         db.signedByNum()
             .then((result) => {
                 const numOfNames = result.rows[0].count;
-
                 db.returnSignature(req.session.userId).then((result) => {
                     res.render("thanks", {
                         layout: "main",
@@ -199,12 +202,18 @@ app.get("/thanks", (req, res) => {
     }
 });
 
+app.post("/thanks", (req, res) => {
+    res.redirect("/registration");
+});
+
+/* ---------------LIST OF PPL WHO SIGNED--------------- */
 app.get("/signedBy", (req, res) => {
     if (!req.session.signatureId) {
         res.redirect("/petition");
     } else {
         db.signedBy()
             .then((result) => {
+                console.log("(LIST) listOfNames", result.rows);
                 res.render("signedBy", {
                     layout: "main",
                     listOfNames: result.rows,
@@ -214,6 +223,56 @@ app.get("/signedBy", (req, res) => {
                 res.end(error, "BIG ERROR! CAN'T RETURN LIST OF SIGNATURES");
             });
     }
+});
+
+app.get("/signedBy/:city", (req, res) => {
+    const city = req.params.city;
+    // console.log("city", city);
+    db.signedByCity(city).then((result) => {
+        res.render("signedBy", {
+            layout: "main",
+            listOfNames: result.rows,
+        });
+    });
+});
+
+/* ---------------PROFILE PAGE--------------- */
+app.get("/profile", (req, res) => {
+    res.render("profile", {
+        layout: "main",
+    });
+});
+
+app.post("/profile", (req, res) => {
+    const age = req.body.age;
+    const city = req.body.city;
+    // const url = req.body.url;
+    const userId = req.session.userId;
+    if (req.body.url || req.body.age || req.body.city) {
+        let url = "";
+        if (!req.body.url.startsWith("http")) {
+            console.log("URL starts with http is false");
+            url = `http://" ${url}`;
+        } else {
+            console.log("URL start with http is true");
+            url = req.body.url;
+        }
+        db.addProfile(age, city, url, userId)
+            .then(() => {
+                res.redirect("/petition");
+            })
+            .catch((err) => console.log(err));
+    } else {
+        res.redirect("/petition");
+    }
+});
+
+/* ---------------LOGOUT--------------- */
+app.get("/logout", (req, res) => {
+    req.session = null;
+    res.render("logout", {
+        layout: "main",
+    });
 });
 
 app.listen(8081, () => console.log("petition is listening"));

@@ -2,9 +2,26 @@
 <img class="plane" src="/on_plane_sitting_cnn_copy.png" alt="cnn.com">
 <figcaption>© cnn.com</figcaption>
 <h1>Petition was signed by</h1>
-<ol class="list-names">
+<ul class="list-names">
+
 {{#each listOfNames}}
-<li>{{firstname}} {{lastname}} </li>
-{{/each}}
-</ol>
-</div>
+
+<li>
+    {{#if url}}
+<a href="{{url}}" target="_blank">{{firstname}} {{lastname}}</a>
+    {{else}}
+{{firstname}} {{lastname}}
+    {{/if}}
+
+     {{#if age}}
+| {{age}}    
+    {{/if}}
+
+    {{#if city}}
+| <a href="/signedBy/{{city}}">{{city}}</a>
+    {{/if}}</li>
+    
+    {{/each}}
+</ul>
+
+<a class="logout" href="/logout">Logout</a>
