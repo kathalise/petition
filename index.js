@@ -21,7 +21,7 @@ app.set("view engine", "handlebars");
 app.use(cookieParser());
 app.use(
     cookieSession({
-        secret: `I'm always hungry.`,
+        secret: process.env.SESSION_SECRET || `I'm always hungry.`,
         maxAge: 1000 * 60 * 60 * 24 * 14,
     })
 );
