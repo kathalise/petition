@@ -5,4 +5,4 @@ DROP TABLE IF EXISTS user_profiles CASCADE;
     city VARCHAR(255),
     url VARCHAR(512),
     user_id INT NOT NULL REFERENCES users(id)
-  );
+  )

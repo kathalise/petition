@@ -1,6 +1,7 @@
 const spicedPg = require("spiced-pg");
 const db = spicedPg(
-    "postgres:postgres:postgres@localhost:5432/masala-petition"
+    process.env.DATABASE_URL ||
+        "postgres:postgres:postgres@localhost:5432/masala-petition"
 );
 
 // ------------- user.sql ------------- //
@@ -30,7 +31,7 @@ module.exports.addSignature = (signature, user_id) => {
 
 module.exports.signedBy = () => {
     const q = `SELECT users.firstname, users.lastname, user_profiles.age, user_profiles.city, user_profiles.url
-      FROM signatures JOIN users ON signatures.user_id = users.id JOIN user_profiles ON users.id = user_profiles.user_id;`;
+      FROM signatures JOIN users ON signatures.user_id = users.id LEFT JOIN user_profiles ON users.id = user_profiles.user_id;`;
     return db.query(q);
 };
 

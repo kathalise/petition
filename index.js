@@ -182,17 +182,20 @@ app.post("/petition", (req, res) => {
 
 /* ---------------THANKS--------------- */
 app.get("/thanks", (req, res) => {
+    // const firstname = req.session.firstname;
     if (!req.session.userId) {
         res.redirect("/petition");
     } else {
         db.signedByNum()
             .then((result) => {
                 const numOfNames = result.rows[0].count;
+                // const currentUser;
                 db.returnSignature(req.session.userId).then((result) => {
                     res.render("thanks", {
                         layout: "main",
                         signatureImg: result.rows[0].signature,
                         numOfNames,
+                        // firstname,
                     });
                 });
             })
@@ -252,7 +255,7 @@ app.post("/profile", (req, res) => {
         let url = "";
         if (!req.body.url.startsWith("http")) {
             console.log("URL starts with http is false");
-            url = `http://" ${url}`;
+            url = `http:// ${url}`;
         } else {
             console.log("URL start with http is true");
             url = req.body.url;
@@ -275,4 +278,6 @@ app.get("/logout", (req, res) => {
     });
 });
 
-app.listen(8081, () => console.log("petition is listening"));
+app.listen(process.env.PORT || 8081, () =>
+    console.log("petition is listening")
+);
