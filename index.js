@@ -247,9 +247,9 @@ app.get("/profile", (req, res) => {
 });
 
 app.post("/profile", (req, res) => {
-    const age = req.body.age;
-    const city = req.body.city;
-    // const url = req.body.url;
+    let age = req.body.age;
+    let city = req.body.city;
+    // let url = req.body.url;
     const userId = req.session.userId;
     if (req.body.url || req.body.age || req.body.city) {
         let url = "";
@@ -259,6 +259,11 @@ app.post("/profile", (req, res) => {
         } else {
             console.log("URL start with http is true");
             url = req.body.url;
+        }
+        if (!age) {
+            age = null;
+        } else {
+            age = req.body.age;
         }
         db.addProfile(age, city, url, userId)
             .then(() => {
@@ -270,6 +275,12 @@ app.post("/profile", (req, res) => {
     }
 });
 
+/* ---------------EDIT PROFILE PAGE--------------- */
+app.get("/editprofile", (req, res) => {
+    res.render("editprofile", {
+        layout: "main",
+    });
+});
 /* ---------------LOGOUT--------------- */
 app.get("/logout", (req, res) => {
     req.session = null;

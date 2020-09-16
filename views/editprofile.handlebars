@@ -1,0 +1,26 @@
+<div class="form-container">
+<p>Edit your Profile</p>
+<form id="signup" method="POST" action="/editprofile">
+
+<input type="text" id="firstname" name="firstname" value="{{users.firstname}}" placeholder="Enter your first name">
+  
+<label for="lastname"></label>
+<input type="text" id="lastname" name="lastname" value="{{users.lastname}}" placeholder="Enter your last name">
+  
+<label for="email"></label>
+<input type="email" id="email" name="email" value="{{users.email}}" placeholder="Enter your email">
+  
+<label for="password"></label>
+<input type="password" id="password" name="password" minlength="2" placeholder="Change password">
+<label for="age"></label>
+<input type="number" min="0" id="age" name="age" placeholder="Age">
+  
+<label for="City"></label>
+<input type="text" id="city" name="city" placeholder="City">
+  
+<label for="Homepage"></label>
+<input type="url" id="url" name="url" placeholder="Homepage">
+<br>
+<input id="button" type="submit" value="Update ✈">
+</form>
+</div>
