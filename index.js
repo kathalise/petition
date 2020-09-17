@@ -127,7 +127,7 @@ app.post("/login", (req, res) => {
         const password = result.rows[0].password;
         compare(plainPassword, password).then((userExists) => {
             console.log("userExists", userExists);
-            //if user does not exist
+            //if user does exist
             if (userExists) {
                 const userId = result.rows[0].id;
                 req.session.userId = userId;
@@ -160,7 +160,7 @@ app.post("/login", (req, res) => {
 
 app.get("/petition", (req, res) => {
     console.log("made it to test!");
-    // if userId is truthy
+    // if signatureId is truthy
     if (req.session.signatureId) {
         res.redirect("/thanks");
     } else {
