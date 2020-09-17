@@ -16,13 +16,18 @@
   <canvas id="canvas" width="200" height="40" ></canvas>
   <input type="hidden" id="signature" name="signature">
   <label class="sign-here" for="signature">Sign here</label>
+
   
   <input id="button" type="submit" value="Submit  ✈">
-  
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
 </form>
 <input id="deleteSig" type="submit" value="Delete Signature">
 <form id="signup" method="GET" action="/editprofile">
-<input id="button" type="submit" value="Edit Your Profile"></form>
+<input id="button" type="submit" value="Edit Your Profile">
+<input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+</form>
+
 </div>
 <a class="logout" href="/logout">Logout</a>
 </div>

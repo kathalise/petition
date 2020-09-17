@@ -2,7 +2,7 @@ const express = require("express");
 const handlebars = require("express-handlebars");
 const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
-// const csurf = require("csurf");
+const csurf = require("csurf");
 const db = require("./db.js");
 const { compare, hash } = require("./bcrypt");
 const app = express();
@@ -34,9 +34,13 @@ app.use(
 );
 
 /////////////////////////////////////
-///////// TO BE ACTIVATED ///////////
-// app.use(csurf());
-/////////////////////////////////////
+app.use(csurf());
+
+app.use(function (req, res, next) {
+    res.set("x-frame-options", "DENY");
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
 /////////////////////////////////////
 
 app.use((req, res, next) => {

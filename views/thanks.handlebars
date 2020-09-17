@@ -9,14 +9,19 @@
 </div>
 
 <form id="signup" method="GET" action="/editprofile">
-<input id="button" type="submit" value="Edit Your Profile"></form>
+<input id="button" type="submit" value="Edit Your Profile">
+<input type="hidden" name="_csrf" value="{{csrfToken}}">
+</form>
+
 
 <form id="signup" method="POST" action="/deleteSig">
-<input id="deleteSig" type="submit" value="Unsign Petition"></form>
+<input id="deleteSig" type="submit" value="Unsign Petition">
+<input type="hidden" name="_csrf" value="{{csrfToken}}">
+</form>
 <br>
 <form id="signup" method="GET" action="/signedBy">
-
-<input id="button" type="submit" value="See all {{numOfNames}} signers"></form>
-
+<input id="button" type="submit" value="See all {{numOfNames}} signers">
+<input type="hidden" name="_csrf" value="{{csrfToken}}">
+</form>
 <a class="logout" href="/logout">Logout</a>
 </div>
