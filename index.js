@@ -2,6 +2,7 @@ const express = require("express");
 const handlebars = require("express-handlebars");
 const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
+const csurf = require("csurf");
 const db = require("./db.js");
 const { compare, hash } = require("./bcrypt");
 const app = express();
@@ -32,6 +33,12 @@ app.use(
     })
 );
 
+/////////////////////////////////////
+///////// TO BE ACTIVATED ///////////
+// app.use(csurf());
+/////////////////////////////////////
+/////////////////////////////////////
+
 app.use((req, res, next) => {
     console.log(
         req.method,
@@ -49,7 +56,10 @@ app.get("/", (req, res) => {
     res.redirect("/registration");
 });
 
+////////////////////////////////////////////////
 /* ---------------REGISTRATION--------------- */
+////////////////////////////////////////////////
+
 app.get("/registration", (req, res) => {
     if (!req.session.userId) {
         res.render("registration", {
@@ -95,16 +105,17 @@ app.post("/registration", (req, res) => {
     }
 });
 
+/////////////////////////////////////////
 /* ---------------LOGIN--------------- */
+/////////////////////////////////////////
+
 app.get("/login", (req, res) => {
     if (!req.session.userId) {
         res.render("login", {
             layout: "main",
         });
     } else {
-        res.render("petition", {
-            layout: "main",
-        });
+        res.redirect("/petition");
     }
 });
 
@@ -112,44 +123,49 @@ app.post("/login", (req, res) => {
     const email = req.body.email;
     const plainPassword = req.body.password;
 
-    db.loginUser(email)
-        .then((result) => {
-            const password = result.rows[0].password;
-            const userId = result.rows[0].id;
-            compare(plainPassword, password).then((userExists) => {
-                console.log("userExists", userExists);
-                if (userExists === false) {
-                    res.render("login", {
-                        layout: "main",
-                        inputIncomplete: true,
+    db.loginUser(email).then((result) => {
+        const password = result.rows[0].password;
+        compare(plainPassword, password).then((userExists) => {
+            console.log("userExists", userExists);
+            //if user does not exist
+            if (userExists) {
+                const userId = result.rows[0].id;
+                req.session.userId = userId;
+
+                db.returnSignature(userId)
+                    .then((result) => {
+                        if (result.rows.length != 0) {
+                            req.session.signatureId = result.rows[0].id;
+                            res.redirect("/thanks");
+                        } else {
+                            res.redirect("/petition");
+                        }
+                    })
+                    .catch((err) => {
+                        console.log("error in checking if signed", err);
                     });
-                } else {
-                    req.session.userId = userId;
-                    res.redirect("/petition");
-                }
-            });
-        })
-        .catch((err) => {
-            console.log(err);
+            } else {
+                res.render("login", {
+                    layout: "main",
+                    inputIncomplete: true,
+                });
+            }
         });
+    });
 });
 
+////////////////////////////////////////////
 /* ---------------PETITION--------------- */
+////////////////////////////////////////////
+
 app.get("/petition", (req, res) => {
-    // console.log("made it to test!");
-    const userId = req.session.userId;
-    if (!userId) {
-        console.log("(A) req.session.userId: ", req.session.userId);
-        res.redirect("/login");
+    console.log("made it to test!");
+    // if userId is truthy
+    if (req.session.signatureId) {
+        res.redirect("/thanks");
     } else {
-        db.returnSignature(userId).then((result) => {
-            if (!result.rows[0]) {
-                res.render("petition", {
-                    layout: "main",
-                });
-            } else {
-                res.redirect("/thanks");
-            }
+        res.render("petition", {
+            layout: "main",
         });
     }
 });
@@ -157,7 +173,7 @@ app.get("/petition", (req, res) => {
 app.post("/petition", (req, res) => {
     const signature = req.body.signature;
     const userId = req.session.userId;
-    if (!req.body.signature) {
+    if (!signature) {
         // console.log("All fields require input!");
         res.render("petition", {
             layout: "main",
@@ -180,17 +196,22 @@ app.post("/petition", (req, res) => {
     }
 });
 
+//////////////////////////////////////////
 /* ---------------THANKS--------------- */
+//////////////////////////////////////////
+
 app.get("/thanks", (req, res) => {
-    // const firstname = req.session.firstname;
-    if (!req.session.userId) {
+    // const signatureId = req.session.signatureId;
+    const userId = req.session.userId;
+
+    if (!req.session.signatureId) {
         res.redirect("/petition");
     } else {
         db.signedByNum()
-            .then((result) => {
-                const numOfNames = result.rows[0].count;
+            .then((num) => {
+                const numOfNames = num.rows[0].count;
                 // const currentUser;
-                db.returnSignature(req.session.userId).then((result) => {
+                db.returnSignature(userId).then((result) => {
                     res.render("thanks", {
                         layout: "main",
                         signatureImg: result.rows[0].signature,
@@ -205,11 +226,14 @@ app.get("/thanks", (req, res) => {
     }
 });
 
-app.post("/thanks", (req, res) => {
-    res.redirect("/registration");
-});
+// app.post("/thanks", (req, res) => {
+//     res.redirect("/registration");
+// });
 
+//////////////////////////////////////////////////////////
 /* ---------------LIST OF PPL WHO SIGNED--------------- */
+//////////////////////////////////////////////////////////
+
 app.get("/signedBy", (req, res) => {
     if (!req.session.signatureId) {
         res.redirect("/petition");
@@ -239,7 +263,10 @@ app.get("/signedBy/:city", (req, res) => {
     });
 });
 
+////////////////////////////////////////////////
 /* ---------------PROFILE PAGE--------------- */
+////////////////////////////////////////////////
+
 app.get("/profile", (req, res) => {
     res.render("profile", {
         layout: "main",
@@ -275,19 +302,45 @@ app.post("/profile", (req, res) => {
     }
 });
 
+/////////////////////////////////////////////////////
 /* ---------------EDIT PROFILE PAGE--------------- */
+/////////////////////////////////////////////////////
+
 app.get("/editprofile", (req, res) => {
-    res.render("editprofile", {
-        layout: "main",
-    });
+    db.userProfileData(req.session.userId)
+        .then((result) => {
+            res.render("editprofile", {
+                layout: "main",
+                userProfile: result.rows[0],
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 });
+
+app.post("/editprofile", (req, res) => {
+    if (!req.body.password) {
+        console.log("No password update", req.session.userId);
+        res.redirect("/thanks");
+    }
+});
+
+//////////////////////////////////////////
 /* ---------------LOGOUT--------------- */
+//////////////////////////////////////////
+
 app.get("/logout", (req, res) => {
+    // deleting all sessions (userId & signatureId)
     req.session = null;
     res.render("logout", {
         layout: "main",
     });
 });
+
+//////////////////////////////////////////
+/* ----------------PORT---------------- */
+//////////////////////////////////////////
 
 app.listen(process.env.PORT || 8081, () =>
     console.log("petition is listening")

@@ -7,7 +7,14 @@
 <div class= "signature-pic-box">
 <img src="{{signatureImg}}"> 
 </div>
-<a href="/petition">Edit signature</a>
+
+<form id="signup" method="GET" action="/editprofile">
+<input id="button" type="submit" value="Edit Your Profile"></form>
+<form id="signup" method="GET" action="/petition">
+<input id="button" type="submit" value="Edit signature"></form>
+
+
+
 
 <a href="/signedBy">Check out all {{numOfNames}} signers</a>
 

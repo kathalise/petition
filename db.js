@@ -50,7 +50,7 @@ module.exports.signedByNum = () => {
 };
 
 module.exports.returnSignature = (user_id) => {
-    const q = `SELECT signature FROM signatures WHERE user_id = $1 AND user_id IS NOT NULL`;
+    const q = `SELECT signature FROM signatures WHERE user_id = $1`;
     const params = [user_id];
     return db.query(q, params);
 };
@@ -61,3 +61,13 @@ module.exports.addProfile = (age, city, url, user_id) => {
     const params = [age, city, url, user_id];
     return db.query(q, params);
 };
+
+module.exports.userProfileData = (user_id) => {
+    const q = `SELECT users.firstname, users.lastname, users.email, users.password, user_profiles.age, user_profiles.city, user_profiles.url
+    FROM user_profiles LEFT JOIN users ON users.id = user_profiles.user_id
+    WHERE user_id = $1`;
+    const params = [user_id];
+    return db.query(q, params);
+};
+
+// module.exports.userProfileDataUpdate = (user_id) => {};
