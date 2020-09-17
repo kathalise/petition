@@ -50,24 +50,58 @@ module.exports.signedByNum = () => {
 };
 
 module.exports.returnSignature = (user_id) => {
-    const q = `SELECT signature FROM signatures WHERE user_id = $1`;
+    const q = `SELECT signature, id FROM signatures WHERE user_id = $1`;
     const params = [user_id];
     return db.query(q, params);
 };
 
 // ------------- user_profiles.sql ------------- //
 module.exports.addProfile = (age, city, url, user_id) => {
-    const q = `INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4)`;
+    const q = `INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4);`;
     const params = [age, city, url, user_id];
     return db.query(q, params);
 };
 
 module.exports.userProfileData = (user_id) => {
     const q = `SELECT users.firstname, users.lastname, users.email, users.password, user_profiles.age, user_profiles.city, user_profiles.url
-    FROM user_profiles LEFT JOIN users ON users.id = user_profiles.user_id
-    WHERE user_id = $1`;
+    FROM users LEFT JOIN user_profiles ON user_profiles.user_id = users.id
+    WHERE users.id = $1;`;
     const params = [user_id];
     return db.query(q, params);
 };
 
-// module.exports.userProfileDataUpdate = (user_id) => {};
+module.exports.usersEdit = (firstname, lastname, email, id) => {
+    const q = `UPDATE users SET firstname = $1, lastname = $2, email = $3
+    WHERE users.id = $4;`;
+    const params = [firstname, lastname, email, id];
+    return db.query(q, params);
+};
+
+module.exports.userProfilesEdit = (age, city, url, user_id) => {
+    const q = `INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_profiles.user_id)
+    DO UPDATE SET age = $1, city = $2, url = $3;`;
+    const params = [age, city, url, user_id];
+    return db.query(q, params);
+};
+
+module.exports.usersWithPasswordEdit = (
+    firstname,
+    lastname,
+    email,
+    password,
+    id
+) => {
+    const q = `UPDATE users 
+    SET firstname=$1, lastname=$2, email=$3, password=$4 
+    WHERE users.id=$5;`;
+
+    const params = [firstname, lastname, email, password, id];
+    return db.query(q, params);
+};
+
+module.exports.deleteSig = (user_id) => {
+    const q = `DELETE FROM signatures WHERE user_id=$1;`;
+    const params = [user_id];
+    return db.query(q, params);
+};

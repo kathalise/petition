@@ -1,5 +1,8 @@
 <div class="form-container">
 <p>Edit your Profile</p>
+{{#if tryAgain}}
+  {{>errorTwo }}
+{{/if}}
 <form id="signup" method="POST" action="/editprofile">
 
 <input type="text" id="firstname" name="firstname" value="{{userProfile.firstname}}" placeholder="Enter your first name">

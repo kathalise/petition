@@ -2,7 +2,7 @@ const express = require("express");
 const handlebars = require("express-handlebars");
 const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
-const csurf = require("csurf");
+// const csurf = require("csurf");
 const db = require("./db.js");
 const { compare, hash } = require("./bcrypt");
 const app = express();
@@ -131,9 +131,13 @@ app.post("/login", (req, res) => {
             if (userExists) {
                 const userId = result.rows[0].id;
                 req.session.userId = userId;
-
+                console.log("userID with pete", userId);
                 db.returnSignature(userId)
                     .then((result) => {
+                        console.log(
+                            "result.rows.length with pete",
+                            result.rows.length
+                        );
                         if (result.rows.length != 0) {
                             req.session.signatureId = result.rows[0].id;
                             res.redirect("/thanks");
@@ -226,10 +230,6 @@ app.get("/thanks", (req, res) => {
     }
 });
 
-// app.post("/thanks", (req, res) => {
-//     res.redirect("/registration");
-// });
-
 //////////////////////////////////////////////////////////
 /* ---------------LIST OF PPL WHO SIGNED--------------- */
 //////////////////////////////////////////////////////////
@@ -240,7 +240,7 @@ app.get("/signedBy", (req, res) => {
     } else {
         db.signedBy()
             .then((result) => {
-                console.log("(LIST) listOfNames", result.rows);
+                console.log("LIST listOfNames", result.rows);
                 res.render("signedBy", {
                     layout: "main",
                     listOfNames: result.rows,
@@ -276,27 +276,28 @@ app.get("/profile", (req, res) => {
 app.post("/profile", (req, res) => {
     let age = req.body.age;
     let city = req.body.city;
-    // let url = req.body.url;
+    let url = req.body.url;
     const userId = req.session.userId;
     if (req.body.url || req.body.age || req.body.city) {
-        let url = "";
-        if (!req.body.url.startsWith("http")) {
-            console.log("URL starts with http is false");
-            url = `http:// ${url}`;
-        } else {
-            console.log("URL start with http is true");
-            url = req.body.url;
+        let urlInput = null;
+        if (url.startsWith("http")) {
+            urlInput = url;
+        } else if (url !== "") {
+            console.log("URL start with http is false");
+            urlInput = `http:// ${url}`;
         }
         if (!age) {
             age = null;
         } else {
             age = req.body.age;
         }
-        db.addProfile(age, city, url, userId)
+        db.addProfile(age, city, urlInput, userId)
             .then(() => {
                 res.redirect("/petition");
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(err);
+            });
     } else {
         res.redirect("/petition");
     }
@@ -320,10 +321,100 @@ app.get("/editprofile", (req, res) => {
 });
 
 app.post("/editprofile", (req, res) => {
-    if (!req.body.password) {
-        console.log("No password update", req.session.userId);
-        res.redirect("/thanks");
+    let firstname = req.body.firstname;
+    let lastname = req.body.lastname;
+    let email = req.body.email;
+    let plainPassword = req.body.password;
+    let age = req.body.age;
+    let city = req.body.city;
+    let url = req.body.url;
+
+    // ---------- condition for age ---------- //
+    if (!age) {
+        age = null;
+    } else {
+        age = req.body.age;
     }
+    // ---------- condition for url ---------- //
+    let urlInput = null;
+    if (url.startsWith("http")) {
+        console.log("Url starts with http true");
+        urlInput = url;
+    } else if (url !== "") {
+        console.log("URL start with http is false");
+        urlInput = `http:// ${url}`;
+    }
+
+    if (!plainPassword) {
+        console.log("No password updated");
+
+        Promise.all([
+            db.usersEdit(firstname, lastname, email, req.session.userId),
+            db.userProfilesEdit(age, city, urlInput, req.session.userId),
+        ])
+            .then(() => {
+                res.redirect("/thanks");
+            })
+            .catch((err) => {
+                console.log(
+                    "Error in editprofile post request - good luck with that!!",
+                    err
+                );
+                db.userProfileData(req.session.userId).then((result) => {
+                    res.render("editprofile", {
+                        layout: "main",
+                        userProfile: result.rows[0],
+                        tryAgain: true,
+                    });
+                });
+            });
+    } else {
+        console.log("USER IS CHANGING PASSWORD");
+        hash(plainPassword).then((password) => {
+            Promise.all([
+                db.usersWithPasswordEdit(
+                    firstname,
+                    lastname,
+                    email,
+                    password,
+                    req.session.userId
+                ),
+                db.userProfilesEdit(age, city, urlInput, req.session.userId),
+            ])
+                .then((result) => {
+                    console.log(
+                        "Changing user date including password this is BIG",
+                        result
+                    );
+                    res.redirect("/petition");
+                })
+                .catch((err) => {
+                    console.log(
+                        "Error in post request edit profile changing PW",
+                        err
+                    );
+                    db.userProfileData(req.session.userId).then((result) => {
+                        res.render("editprofile", {
+                            layout: "main",
+                            userProfile: result.rows[0],
+                            tryAgain: true,
+                        });
+                    });
+                });
+        });
+    }
+});
+
+////////////////////////////////////////////////////
+/* ---------------DELETE SIGNATURE--------------- */
+////////////////////////////////////////////////////
+
+app.post("/deleteSig", (req, res) => {
+    console.log("Signature deleted");
+    db.deleteSig(req.session.userId).then(() => {
+        req.session.signatureId = null;
+        res.redirect("/petition");
+    });
 });
 
 //////////////////////////////////////////

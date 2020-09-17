@@ -10,13 +10,13 @@
 
 <form id="signup" method="GET" action="/editprofile">
 <input id="button" type="submit" value="Edit Your Profile"></form>
-<form id="signup" method="GET" action="/petition">
-<input id="button" type="submit" value="Edit signature"></form>
 
+<form id="signup" method="POST" action="/deleteSig">
+<input id="deleteSig" type="submit" value="Unsign Petition"></form>
+<br>
+<form id="signup" method="GET" action="/signedBy">
 
-
-
-<a href="/signedBy">Check out all {{numOfNames}} signers</a>
+<input id="button" type="submit" value="See all {{numOfNames}} signers"></form>
 
 <a class="logout" href="/logout">Logout</a>
 </div>
