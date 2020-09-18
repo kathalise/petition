@@ -6,6 +6,7 @@ const csurf = require("csurf");
 const db = require("./db.js");
 const { compare, hash } = require("./bcrypt");
 const app = express();
+///////////////// const redis = require("./redis");
 
 const hbSet = handlebars.create({
     helpers: {
@@ -426,11 +427,9 @@ app.post("/deleteSig", (req, res) => {
 //////////////////////////////////////////
 
 app.get("/logout", (req, res) => {
-    // deleting all sessions (userId & signatureId)
-    req.session = null;
-    res.render("logout", {
-        layout: "main",
-    });
+    req.session.userId = null;
+    req.session.signatureId = null;
+    res.redirect("login");
 });
 
 //////////////////////////////////////////

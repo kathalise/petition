@@ -64,16 +64,17 @@ module.exports.addProfile = (age, city, url, user_id) => {
 
 module.exports.userProfileData = (user_id) => {
     const q = `SELECT users.firstname, users.lastname, users.email, users.password, user_profiles.age, user_profiles.city, user_profiles.url
-    FROM users LEFT JOIN user_profiles ON user_profiles.user_id = users.id
+    FROM users FULL JOIN user_profiles 
+    ON users.id = user_profiles.user_id
     WHERE users.id = $1;`;
     const params = [user_id];
     return db.query(q, params);
 };
 
-module.exports.usersEdit = (firstname, lastname, email, id) => {
+module.exports.usersEdit = (firstname, lastname, email, user_id) => {
     const q = `UPDATE users SET firstname = $1, lastname = $2, email = $3
     WHERE users.id = $4;`;
-    const params = [firstname, lastname, email, id];
+    const params = [firstname, lastname, email, user_id];
     return db.query(q, params);
 };
 
