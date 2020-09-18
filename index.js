@@ -40,6 +40,7 @@ app.use(csurf());
 app.use(function (req, res, next) {
     res.set("x-frame-options", "DENY");
     res.locals.csrfToken = req.csrfToken();
+    console.log(req.method, req.url);
     next();
 });
 /////////////////////////////////////
@@ -128,39 +129,47 @@ app.post("/login", (req, res) => {
     const email = req.body.email;
     const plainPassword = req.body.password;
 
-    db.loginUser(email).then((result) => {
-        const password = result.rows[0].password;
-        compare(plainPassword, password).then((userExists) => {
-            console.log("userExists", userExists);
-            //if user does exist
-            if (userExists) {
-                const userId = result.rows[0].id;
-                req.session.userId = userId;
-                console.log("userID with pete", userId);
-                db.returnSignature(userId)
-                    .then((result) => {
-                        console.log(
-                            "result.rows.length with pete",
-                            result.rows.length
-                        );
-                        if (result.rows.length != 0) {
-                            req.session.signatureId = result.rows[0].id;
-                            res.redirect("/thanks");
-                        } else {
-                            res.redirect("/petition");
-                        }
-                    })
-                    .catch((err) => {
-                        console.log("error in checking if signed", err);
+    db.loginUser(email)
+        .then((result) => {
+            const password = result.rows[0].password;
+            compare(plainPassword, password).then((userExists) => {
+                console.log("userExists", userExists);
+                //if user does exist
+                if (userExists) {
+                    const userId = result.rows[0].id;
+                    req.session.userId = userId;
+                    console.log("userID with pete", userId);
+                    db.returnSignature(userId)
+                        .then((result) => {
+                            console.log(
+                                "result.rows.length with pete",
+                                result.rows.length
+                            );
+                            if (result.rows.length != 0) {
+                                req.session.signatureId = result.rows[0].id;
+                                res.redirect("/thanks");
+                            } else {
+                                res.redirect("/petition");
+                            }
+                        })
+                        .catch((err) => {
+                            console.log("error in checking if signed", err);
+                        });
+                } else {
+                    res.render("login", {
+                        layout: "main",
+                        tryAgain: true,
                     });
-            } else {
-                res.render("login", {
-                    layout: "main",
-                    inputIncomplete: true,
-                });
-            }
+                }
+            });
+        })
+        .catch((err) => {
+            console.log("Err in login post req", err);
+            res.render("login", {
+                layout: "main",
+                tryAgain: true,
+            });
         });
-    });
 });
 
 ////////////////////////////////////////////
@@ -168,14 +177,18 @@ app.post("/login", (req, res) => {
 ////////////////////////////////////////////
 
 app.get("/petition", (req, res) => {
-    console.log("made it to test!");
-    // if signatureId is truthy
-    if (req.session.signatureId) {
-        res.redirect("/thanks");
+    if (!req.session.userId) {
+        res.redirect("/login");
     } else {
-        res.render("petition", {
-            layout: "main",
-        });
+        console.log("made it to test!");
+        // if signatureId is truthy
+        if (req.session.signatureId) {
+            res.redirect("/thanks");
+        } else {
+            res.render("petition", {
+                layout: "main",
+            });
+        }
     }
 });
 
@@ -313,16 +326,20 @@ app.post("/profile", (req, res) => {
 /////////////////////////////////////////////////////
 
 app.get("/editprofile", (req, res) => {
-    db.userProfileData(req.session.userId)
-        .then((result) => {
-            res.render("editprofile", {
-                layout: "main",
-                userProfile: result.rows[0],
+    if (!req.session.userId) {
+        res.redirect("/login");
+    } else {
+        db.userProfileData(req.session.userId)
+            .then((result) => {
+                res.render("editprofile", {
+                    layout: "main",
+                    userProfile: result.rows[0],
+                });
+            })
+            .catch((err) => {
+                console.log(err);
             });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+    }
 });
 
 app.post("/editprofile", (req, res) => {
@@ -343,7 +360,6 @@ app.post("/editprofile", (req, res) => {
     // ---------- condition for url ---------- //
     let urlInput = null;
     if (url.startsWith("http")) {
-        console.log("Url starts with http true");
         urlInput = url;
     } else if (url !== "") {
         console.log("URL start with http is false");
@@ -353,12 +369,13 @@ app.post("/editprofile", (req, res) => {
     if (!plainPassword) {
         console.log("No password updated");
 
-        Promise.all([
-            db.usersEdit(firstname, lastname, email, req.session.userId),
-            db.userProfilesEdit(age, city, urlInput, req.session.userId),
-        ])
+        // Promise.all([
+        db.usersEdit(firstname, lastname, email, req.session.userId)
+            // db.userProfilesEdit(age, city, urlInput, req.session.userId),
+            // ])
             .then(() => {
                 res.redirect("/thanks");
+                console.log("CAN I EDIT THIS PART?");
             })
             .catch((err) => {
                 console.log(
@@ -376,16 +393,16 @@ app.post("/editprofile", (req, res) => {
     } else {
         console.log("USER IS CHANGING PASSWORD");
         hash(plainPassword).then((password) => {
-            Promise.all([
-                db.usersWithPasswordEdit(
-                    firstname,
-                    lastname,
-                    email,
-                    password,
-                    req.session.userId
-                ),
-                db.userProfilesEdit(age, city, urlInput, req.session.userId),
-            ])
+            // Promise.all([
+            db.usersWithPasswordEdit(
+                firstname,
+                lastname,
+                email,
+                password,
+                req.session.userId
+            )
+                // db.userProfilesEdit(age, city, urlInput, req.session.userId),
+                // ])
                 .then((result) => {
                     console.log(
                         "Changing user date including password this is BIG",
