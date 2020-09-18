@@ -21,10 +21,13 @@ app.engine("handlebars", hbSet.engine);
 // ---- app.engine("handlebars", handlebars()); ----
 app.set("view engine", "handlebars");
 app.use(cookieParser());
+let secrets;
+process.env.NODE_ENV === "production"
+    ? (secrets = process.env)
+    : (secrets = require("./secrets"));
 app.use(
     cookieSession({
-        secret:
-            process.env.SESSION_SECRET || require("./secrets").sessionSecret,
+        secret: `${secrets.sessionSecret}`,
         maxAge: 1000 * 60 * 60 * 24 * 14,
     })
 );
@@ -369,10 +372,7 @@ app.post("/editprofile", (req, res) => {
 
     if (!plainPassword) {
         console.log("No password updated");
-
-        // Promise.all([
         db.usersEdit(firstname, lastname, email, req.session.userId)
-            // db.userProfilesEdit(age, city, urlInput, req.session.userId)
             .then(() => {
                 db.userProfilesEdit(age, city, urlInput, req.session.userId)
                     .then(() => {
@@ -397,16 +397,16 @@ app.post("/editprofile", (req, res) => {
     } else {
         console.log("USER IS CHANGING PASSWORD");
         hash(plainPassword).then((password) => {
-            // Promise.all([
-            db.usersWithPasswordEdit(
-                firstname,
-                lastname,
-                email,
-                password,
-                req.session.userId
-            )
-                // db.userProfilesEdit(age, city, urlInput, req.session.userId),
-                // ])
+            Promise.all([
+                db.usersWithPasswordEdit(
+                    firstname,
+                    lastname,
+                    email,
+                    password,
+                    req.session.userId
+                ),
+                db.userProfilesEdit(age, city, urlInput, req.session.userId),
+            ])
                 .then((result) => {
                     console.log(
                         "Changing user date including password this is BIG",
