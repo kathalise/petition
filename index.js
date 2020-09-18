@@ -23,7 +23,8 @@ app.set("view engine", "handlebars");
 app.use(cookieParser());
 app.use(
     cookieSession({
-        secret: process.env.SESSION_SECRET || `I'm always hungry.`,
+        secret:
+            process.env.SESSION_SECRET || require("./secrets").sessionSecret,
         maxAge: 1000 * 60 * 60 * 24 * 14,
     })
 );
@@ -373,15 +374,14 @@ app.post("/editprofile", (req, res) => {
         db.usersEdit(firstname, lastname, email, req.session.userId)
             // db.userProfilesEdit(age, city, urlInput, req.session.userId)
             .then(() => {
-                db.userProfilesEdit(
-                    age,
-                    city,
-                    urlInput,
-                    req.session.userId
-                ).then(() => {
-                    res.redirect("/thanks");
-                    console.log("CAN I EDIT THIS PART?");
-                });
+                db.userProfilesEdit(age, city, urlInput, req.session.userId)
+                    .then(() => {
+                        res.redirect("/thanks");
+                        console.log("CAN I EDIT THIS PART?");
+                    })
+                    .catch((err) => {
+                        console.log("Pete is online with me", err);
+                    });
             })
             .catch((err) => {
                 res.render("editprofile", {

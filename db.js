@@ -82,7 +82,7 @@ module.exports.usersEdit = (firstname, lastname, email, user_id) => {
 // updating user-profiles
 module.exports.userProfilesEdit = (age, city, url, userId) => {
     const q = `INSERT INTO user_profiles (age, city, url, user_id) 
-    VALUES ($1, $2, $3, $4) ON CONFLICT (user_profiles.user_id)
+    VALUES ($1, $2, $3, $4) ON CONFLICT (user_id)
     DO UPDATE SET age=$1, city=$2, url=$3;`;
     const params = [age, city, url, userId];
     return db.query(q, params);
