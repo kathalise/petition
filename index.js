@@ -371,24 +371,28 @@ app.post("/editprofile", (req, res) => {
 
         // Promise.all([
         db.usersEdit(firstname, lastname, email, req.session.userId)
-            // db.userProfilesEdit(age, city, urlInput, req.session.userId),
-            // ])
+            // db.userProfilesEdit(age, city, urlInput, req.session.userId)
             .then(() => {
-                res.redirect("/thanks");
-                console.log("CAN I EDIT THIS PART?");
+                db.userProfilesEdit(
+                    age,
+                    city,
+                    urlInput,
+                    req.session.userId
+                ).then(() => {
+                    res.redirect("/thanks");
+                    console.log("CAN I EDIT THIS PART?");
+                });
             })
             .catch((err) => {
+                res.render("editprofile", {
+                    layout: "main",
+                    tryAgain: true,
+                });
+
                 console.log(
                     "Error in editprofile post request - good luck with that!!",
                     err
                 );
-                db.userProfileData(req.session.userId).then((result) => {
-                    res.render("editprofile", {
-                        layout: "main",
-                        userProfile: result.rows[0],
-                        tryAgain: true,
-                    });
-                });
             });
     } else {
         console.log("USER IS CHANGING PASSWORD");

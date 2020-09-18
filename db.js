@@ -71,6 +71,7 @@ module.exports.userProfileData = (user_id) => {
     return db.query(q, params);
 };
 
+// updating users (without pw)
 module.exports.usersEdit = (firstname, lastname, email, user_id) => {
     const q = `UPDATE users SET firstname = $1, lastname = $2, email = $3
     WHERE users.id = $4;`;
@@ -78,27 +79,20 @@ module.exports.usersEdit = (firstname, lastname, email, user_id) => {
     return db.query(q, params);
 };
 
+// updating user-profiles
 module.exports.userProfilesEdit = (age, city, url, userId) => {
     const q = `INSERT INTO user_profiles (age, city, url, user_id) 
-    VALUES ($1, $2, $3, $4)
-    ON CONFLICT (user_id) 
+    VALUES ($1, $2, $3, $4) ON CONFLICT (user_profiles.user_id)
     DO UPDATE SET age=$1, city=$2, url=$3;`;
     const params = [age, city, url, userId];
     return db.query(q, params);
 };
 
-module.exports.usersWithPasswordEdit = (
-    firstname,
-    lastname,
-    email,
-    password,
-    user_id
-) => {
-    const q = `UPDATE users
-    SET firstname=$1, lastname=$2, email=$3, password=$4
+module.exports.usersWithPasswordEdit = (first, last, email, pw, user_id) => {
+    const q = `UPDATE users SET firstname=$1, lastname=$2, email=$3, password=$4
     WHERE users.id=$5;`;
 
-    const params = [firstname, lastname, email, password, user_id];
+    const params = [first, last, email, pw, user_id];
     return db.query(q, params);
 };
 
