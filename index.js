@@ -160,10 +160,7 @@ app.post("/login", (req, res) => {
                             console.log("error in checking if signed", err);
                         });
                 } else {
-                    res.render("login", {
-                        layout: "main",
-                        tryAgain: true,
-                    });
+                    res.rendirect("/registration");
                 }
             });
         })
@@ -229,7 +226,6 @@ app.post("/petition", (req, res) => {
 app.get("/thanks", (req, res) => {
     // const signatureId = req.session.signatureId;
     const userId = req.session.userId;
-
     if (!req.session.signatureId) {
         res.redirect("/petition");
     } else {
@@ -237,14 +233,17 @@ app.get("/thanks", (req, res) => {
             .then((num) => {
                 const numOfNames = num.rows[0].count;
                 // const currentUser;
-                db.returnSignature(userId).then((result) => {
-                    res.render("thanks", {
-                        layout: "main",
-                        signatureImg: result.rows[0].signature,
-                        numOfNames,
-                        // firstname,
+                db.returnSignature(userId)
+                    .then((result) => {
+                        res.render("thanks", {
+                            layout: "main",
+                            signatureImg: result.rows[0].signature,
+                            numOfNames,
+                        });
+                    })
+                    .catch((err) => {
+                        console.log("error in get thanks", err);
                     });
-                });
             })
             .catch((err) => {
                 console.log("error in get thanks", err);
