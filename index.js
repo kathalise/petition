@@ -397,20 +397,20 @@ app.post("/editprofile", (req, res) => {
     } else {
         console.log("USER IS CHANGING PASSWORD");
         hash(plainPassword).then((password) => {
+            const newHashedPw = password;
             Promise.all([
                 db.usersWithPasswordEdit(
                     firstname,
                     lastname,
                     email,
-                    password,
+                    newHashedPw,
                     req.session.userId
                 ),
                 db.userProfilesEdit(age, city, urlInput, req.session.userId),
             ])
-                .then((result) => {
+                .then(() => {
                     console.log(
-                        "Changing user date including password this is BIG",
-                        result
+                        "Changing user date including password this is BIG"
                     );
                     res.redirect("/petition");
                 })
