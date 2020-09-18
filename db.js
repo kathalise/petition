@@ -91,13 +91,13 @@ module.exports.usersWithPasswordEdit = (
     lastname,
     email,
     password,
-    id
+    user_id
 ) => {
     const q = `UPDATE users 
     SET firstname=$1, lastname=$2, email=$3, password=$4 
     WHERE users.id=$5;`;
 
-    const params = [firstname, lastname, email, password, id];
+    const params = [firstname, lastname, email, password, user_id];
     return db.query(q, params);
 };
 
@@ -106,3 +106,5 @@ module.exports.deleteSig = (user_id) => {
     const params = [user_id];
     return db.query(q, params);
 };
+
+/// SANITY CHECK RIGHT BRANCH ////
