@@ -1,13 +1,12 @@
+<div class="thanks-container">
 <h1>Sad to see you leave...</h1>
-
-<div class="form-container">
-{{#if tryAgain}}
-  {{>errorTwo }}
-{{/if}}
-
+<img class="plane" src="/exit.png" alt="cnn.com">
+<figcaption>© cnn.com</figcaption>
+<br>
 
 <form id="signup" method="POST">
 <input type="hidden" name="_csrf" value="{{csrfToken}}">
 <button id="deleteSig" type="submit">Delete account</button>
 </form>
+</div>
 </div>
