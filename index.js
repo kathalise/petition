@@ -93,25 +93,24 @@ app.post("/registration", (req, res) => {
             inputIncomplete: true,
         });
     } else {
-        hash(plainPassword)
-            .then((password) => {
-                db.addUser(firstname, lastname, email, password).then(
-                    (result) => {
-                        req.session.userId = result.rows[0].id;
-                        res.redirect("/profile");
-                    }
-                );
-            })
-            .catch((err) => {
-                console.log(
-                    "There was an error creating a user-account (addUser)!",
-                    err
-                );
-                res.render("registration", {
-                    layout: "main",
-                    inputIncomplete: true,
+        hash(plainPassword).then((password) => {
+            const passwordHashed = password;
+            db.addUser(firstname, lastname, email, passwordHashed)
+                .then((result) => {
+                    req.session.userId = result.rows[0].id;
+                    res.redirect("/profile");
+                })
+                .catch((err) => {
+                    console.log(
+                        "There was an error creating a user-account (addUser)!",
+                        err
+                    );
+                    res.render("registration", {
+                        layout: "main",
+                        inputIncomplete: true,
+                    });
                 });
-            });
+        });
     }
 });
 
@@ -136,33 +135,44 @@ app.post("/login", (req, res) => {
     db.loginUser(email)
         .then((result) => {
             const password = result.rows[0].password;
-            compare(plainPassword, password).then((userExists) => {
-                console.log("userExists", userExists);
-                //if user does exist
-                if (userExists) {
-                    const userId = result.rows[0].id;
-                    req.session.userId = userId;
-                    console.log("userID with pete", userId);
-                    db.returnSignature(userId)
-                        .then((result) => {
-                            console.log(
-                                "result.rows.length with pete",
-                                result.rows.length
-                            );
-                            if (result.rows.length != 0) {
-                                req.session.signatureId = result.rows[0].id;
-                                res.redirect("/thanks");
-                            } else {
-                                res.redirect("/petition");
-                            }
-                        })
-                        .catch((err) => {
-                            console.log("error in checking if signed", err);
-                        });
-                } else {
-                    res.rendirect("/registration");
-                }
-            });
+            compare(plainPassword, password)
+                .then((userExists) => {
+                    console.log("userExists", userExists);
+                    //if user does exist
+                    if (userExists) {
+                        const userId = result.rows[0].id;
+                        req.session.userId = userId;
+                        console.log("userID with pete", userId);
+                        db.returnSignature(userId)
+                            .then((result) => {
+                                console.log(
+                                    "result.rows.length with pete",
+                                    result.rows.length
+                                );
+                                if (result.rows.length != 0) {
+                                    req.session.signatureId = result.rows[0].id;
+                                    res.redirect("/thanks");
+                                } else {
+                                    res.redirect("/petition");
+                                }
+                            })
+                            .catch((err) => {
+                                console.log(
+                                    "error in checking if signed petition",
+                                    err
+                                );
+                            });
+                    } else {
+                        res.rendirect("/registration");
+                    }
+                })
+                .catch((err) => {
+                    console.log("Err in login post req", err);
+                    res.render("login", {
+                        layout: "main",
+                        tryAgain: true,
+                    });
+                });
         })
         .catch((err) => {
             console.log("Err in login post req", err);
