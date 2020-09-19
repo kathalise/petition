@@ -460,7 +460,42 @@ app.post("/deleteSig", (req, res) => {
 app.get("/logout", (req, res) => {
     req.session.userId = null;
     req.session.signatureId = null;
-    res.redirect("login");
+    res.redirect("/login");
+});
+
+//////////////////////////////////////////////////
+/* ---------------DELETE ACCOUNT--------------- */
+//////////////////////////////////////////////////
+
+app.get("/delete", (req, res) => {
+    if (!req.session.userId) {
+        res.redirect("/login");
+    } else {
+        res.render("delete", {
+            layout: "main",
+        });
+    }
+});
+
+app.post("/delete", (req, res) => {
+    console.log("DELETING ACCOUNT");
+    const userId = req.session.userId;
+    Promise.all([
+        db.deleteUserProfiles(userId),
+        db.deleteSig(userId),
+        db.deleteUsers(userId),
+    ])
+        .then((x) => {
+            console.log("DELETE ACCOUNT CHECK", x);
+        })
+        .catch((err) => {
+            console.log("ERR DELETING ACC", err);
+            res.redirect("/delete");
+        });
+
+    req.session.userId = null;
+    req.session.signatureId = null;
+    res.redirect("/registration");
 });
 
 //////////////////////////////////////////

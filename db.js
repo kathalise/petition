@@ -109,4 +109,21 @@ module.exports.deleteSig = (user_id) => {
     return db.query(q, params);
 };
 
-/// SANITY CHECK RIGHT BRANCH ////
+/// DELETE ACCOUNT ////
+module.exports.deleteUsers = (user_id) => {
+    const q = `DELETE FROM users WHERE id = ($1)`;
+    const params = [user_id];
+    return db.query(q, params);
+};
+
+module.exports.deleteSig = (user_id) => {
+    const q = `DELETE FROM signatures WHERE user_id = ($1)`;
+    const params = [user_id];
+    return db.query(q, params);
+};
+
+module.exports.deleteUserProfiles = (user_id) => {
+    const q = `DELETE FROM user_profiles WHERE user_id = ($1)`;
+    const params = [user_id];
+    return db.query(q, params);
+};
