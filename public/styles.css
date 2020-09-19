@@ -40,12 +40,12 @@ p {
 }
 /* ---------------ILLUSTRATION IMAGE--------------- */
 .plane {
-    height: 300px;
+    height: 250px;
     object-fit: scale-down;
 }
 
 figcaption {
-    font-size: 11px;
+    font-size: 8px;
 }
 
 /* ---------------FORM--------------- */
@@ -62,6 +62,17 @@ figcaption {
     grid-row-gap: 10px;
 }
 
+#ActLikeSignup {
+    display: inline-grid;
+    grid-row-gap: 10px;
+}
+
+.gridProfile {
+    display: inline-grid;
+    grid-row-gap: 10px;
+    width: 171.86px;
+}
+
 .signup {
     display: inline-grid;
     grid-row-gap: 10px;
@@ -73,6 +84,16 @@ figcaption {
 }
 
 input {
+    /* border: salmon 2px solid; */
+    padding: 10px;
+    border: 3px rgba(0, 0, 0, 0.728) solid;
+    box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.434);
+    display: grid;
+    border-radius: 7%;
+}
+
+button {
     /* border: salmon 2px solid; */
     padding: 10px;
     border: 3px rgba(0, 0, 0, 0.728) solid;
@@ -91,7 +112,7 @@ input {
 }
 
 .sign-here {
-    margin-top: -50px;
+    margin-top: -30px;
     margin-left: 5px;
     font-size: 10px;
     color: rgba(0, 0, 0, 0.315);
@@ -102,7 +123,7 @@ input {
     border: 3px rgba(0, 0, 0, 0.728) solid;
     /* height: 80px;
     width: 80px; */
-    margin-bottom: 20%;
+    margin-bottom: 5%;
     align-self: center;
     transition: background-color 0.5s, color 0.5s;
 }
@@ -129,12 +150,20 @@ input {
 }
 
 .signedBy-Container p {
-    margin: 10px;
+    margin: 20px;
+}
+
+ul {
+    list-style: square;
+    display: grid;
+    margin-bottom: 30px;
 }
 
 li {
     margin: 10px 0;
-    font-size: 1.1em;
+    font-size: 1em;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     /* border-bottom: solid rgba(0, 0, 0, 0.728) 1px; */
     /* background-color: #c8204433; */
 }
@@ -150,7 +179,7 @@ li {
 }
 
 .signature-pic-box {
-    margin: 20px 0;
+    margin: 5px 0;
     background-color: #c8204433;
     border-bottom: solid rgba(0, 0, 0, 0.728) 3px;
     box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.1);
@@ -158,6 +187,8 @@ li {
 
 a {
     margin-top: 10px;
+    font-size: 1em;
+    color: #0085ca;
     text-decoration: none;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -188,4 +219,16 @@ footer {
     margin-top: 40px;
     text-align: center;
     font-size: 10px;
+}
+
+/* ---------------PSEUDE RESPONSIVE--------------- */
+@media screen and (max-width: 800px) {
+    .description p {
+        width: 80%;
+    }
+
+    .plane {
+        height: 150px;
+        object-fit: cover;
+    }
 }

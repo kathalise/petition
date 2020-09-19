@@ -1,27 +1,31 @@
 <div class="thanks-container">
+<h1>Thank You</h1>
 <img class="plane" src="/on_plane_sitting_cnn_copy.png" alt="cnn.com">
 <figcaption>© cnn.com</figcaption>
-<h3>Thank you {{firstname}} for signing the petition <br>(and thank you for remaining in your seat)</h3>
+<h3>for signing the petition <br>(and remaining seated)</h3>
 
-
+<div class="form-container">
+<div class="signup">
 <div class= "signature-pic-box">
 <img src="{{signatureImg}}"> 
 </div>
-
-<form id="signup" method="GET" action="/editprofile">
-<input id="button" type="submit" value="Edit Your Profile">
+<form id="signup" method="GET" action="/signedBy">
+<button id="button" type="submit">See all {{numOfNames}} signers</button>
 <input type="hidden" name="_csrf" value="{{csrfToken}}">
 </form>
-
 
 <form id="signup" method="POST" action="/deleteSig">
-<input id="deleteSig" type="submit" value="Unsign Petition">
+<button id="deleteSig" type="submit">Unsign Petition ✖</button>
 <input type="hidden" name="_csrf" value="{{csrfToken}}">
 </form>
-<br>
-<form id="signup" method="GET" action="/signedBy">
-<input id="button" type="submit" value="See all {{numOfNames}} signers">
+
+<form id="signup" method="GET" action="/editprofile">
+<button id="button" type="submit">Edit Your Profile ✎</button>
 <input type="hidden" name="_csrf" value="{{csrfToken}}">
 </form>
-<a class="logout" href="/logout">Logout</a>
 </div>
+</div>
+
+<a class="logout" href="/logout">Log out</a>
+{{!-- </div> --}}
+

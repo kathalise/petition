@@ -1,7 +1,8 @@
 <div class="signedBy-Container">
+<h1>Petition supporters</h1>
 <img class="plane" src="/on_plane_sitting_cnn_copy.png" alt="cnn.com">
 <figcaption>© cnn.com</figcaption>
-<h1>Petition was signed by</h1>
+<h3>Check out the list of signers</h3>
 <ul class="list-names">
 
 {{#each listOfNames}}
@@ -13,15 +14,19 @@
     {{/if}}
 
      {{#if age}}
-| {{age}}    
+| {{age}}
     {{/if}}
 
     {{#if city}}
-| <a href="/signedBy/{{city}}">{{city}}</a>
+| from <a href="/signedBy/{{city}}">{{city}}</a>
     {{/if}}</li>
     
     {{/each}}
 </ul>
-
-<a class="logout" href="/thanks"> ˿ Back</a>
-<a class="logout" href="/logout">Logout</a>
+<div class="gridProfile">
+<form id="signup" method="GET" action="/thanks">
+<button id="button" type="submit">◄ Take me back</button>
+<input type="hidden" name="_csrf" value="{{csrfToken}}">
+</form>
+</div>
+<a class="logout" href="/logout">Log out</a>

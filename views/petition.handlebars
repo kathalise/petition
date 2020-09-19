@@ -5,6 +5,7 @@
  <img class="plane" src="/on_plane_copy.png" alt="cnn.com">
  <figcaption>© cnn.com</figcaption>
  <p>Have you ever wondered what the people who stand up as soon as the plane lands do with all that extra time they saved? <br>This petition puts an end to that madness. Please support and sign!</p>
+
 </div>
 {{#if inputIncomplete}}
   {{>error }}
@@ -13,23 +14,20 @@
 <div class="signup">
 
 <form id="signup" method="POST" action="/petition">
-  <canvas id="canvas" width="200" height="40" ></canvas>
+  <canvas id="canvas" width="250" height="70" ></canvas>
   <input type="hidden" id="signature" name="signature">
-  <label class="sign-here" for="signature">Sign here</label>
+  <label class="sign-here" for="signature">Sign here *</label>
 
-  
-  <input id="button" type="submit" value="Submit  ✈">
+  <button id="button" type="submit">Submit signature ✓</button>
   <input type="hidden" name="_csrf" value="{{csrfToken}}">
 </form>
-<input id="deleteSig" type="submit" value="Delete Signature">
+<button id="deleteSig" type="submit">Clear Signature ✖</button>
 <form id="signup" method="GET" action="/editprofile">
-<input id="button" type="submit" value="Edit Your Profile">
+<button id="button" type="submit">Edit Your Profile ✎</button>
 <input type="hidden" name="_csrf" value="{{csrfToken}}">
-
 </form>
-
 </div>
-<a class="logout" href="/logout">Logout</a>
+<a class="logout" href="/logout">Log out</a>
 </div>
 
 

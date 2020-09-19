@@ -239,6 +239,7 @@ app.get("/thanks", (req, res) => {
                             layout: "main",
                             signatureImg: result.rows[0].signature,
                             numOfNames,
+                            userId,
                         });
                     })
                     .catch((err) => {
@@ -305,7 +306,7 @@ app.post("/profile", (req, res) => {
             urlInput = url;
         } else if (url !== "") {
             console.log("URL start with http is false");
-            urlInput = `http:// ${url}`;
+            urlInput = `http://${url}`;
         }
         if (!age) {
             age = null;
@@ -366,7 +367,7 @@ app.post("/editprofile", (req, res) => {
         urlInput = url;
     } else if (url !== "") {
         console.log("URL start with http is false");
-        urlInput = `http:// ${url}`;
+        urlInput = `http://${url}`;
     }
 
     if (!plainPassword) {

@@ -56,6 +56,13 @@ module.exports.returnSignature = (user_id) => {
 };
 
 // ------------- user_profiles.sql ------------- //
+
+module.exports.getFirstname = (user_id) => {
+    const q = `SELECT firstname FROM users WHERE id = $1`;
+    const params = [user_id];
+    return db.query(q, params);
+};
+
 module.exports.addProfile = (age, city, url, user_id) => {
     const q = `INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4);`;
     const params = [age, city, url, user_id];
