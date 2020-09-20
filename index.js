@@ -5,7 +5,7 @@ const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 const db = require("./db.js");
 const { compare, hash } = require("./bcrypt");
-const app = express();
+const app = (exports.app = express());
 ///////////////// const redis = require("./redis");
 
 const hbSet = handlebars.create({
@@ -501,7 +501,10 @@ app.post("/delete", (req, res) => {
 //////////////////////////////////////////
 /* ----------------PORT---------------- */
 //////////////////////////////////////////
+///// if-statement for supertesting /////
 
-app.listen(process.env.PORT || 8081, () =>
-    console.log("petition is listening")
-);
+if (require.main == module) {
+    app.listen(process.env.PORT || 8081, () =>
+        console.log("petition is listening")
+    );
+}
